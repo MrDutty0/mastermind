@@ -2,5 +2,6 @@
 
 require_relative 'player'
 
+# Computer player
 class ComputerPlayer < Player
 end
