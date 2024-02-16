@@ -17,18 +17,20 @@ module PlayerIO
     input
   end
 
-  def prompt_code_colors
-    message = "To navigate horizontally, use the 'right' and 'left' arrow keys. Change colors with the 'up' and 'down' keys.\nPress 'enter' to lock in your color code."
-    # arrow keys and enter key
-    regex = /(\e\[[ABCD])|(\r)/
+  def prompt_color_move
+    message = "Use the 'right' and 'left' arrow keys to navigate horizontally." \
+    "\nWith the 'up' and 'down' keys change the color." \
+    "\nPress 'enter' to lock in your color code."
+
+    regex = /(\e\[[ABCD])|(\r)/ # Regex for arrow keys and enter key
 
     condition = ->(input) { regex.match(input) }
-    prompt(message, condition, prompt_one_char = true)
+    prompt(message, condition, prompt_one_char: true)
   end
 
   def prompt_no_rounds
     message = 'Enter an even number of rounds you want to play'
-    regex = /^\d$/
+    regex = /^[1-9]\d*$/
     condition = ->(input) { regex.match(input) && input.to_i.even? }
     prompt(message, condition).to_i
   end
@@ -39,17 +41,16 @@ module PlayerIO
     condition = ->(input) { regex.match(input) }
     prompt(message, condition).to_i
   end
-  
-  def prompt(prompt_text, condition, prompt_one_char = false)
+
+  def prompt(prompt_text, condition, prompt_one_char: false)
     error_count = 0
 
     loop do
-      clear_screen
-      game_banner
       new_prompt_text = "#{prompt_text} (#{error_count})" unless error_count.zero?
       puts new_prompt_text || prompt_text
       input = prompt_one_char ? prompt_for_single_char : gets.chomp
 
+      clear_screen
       return input if condition.call(input)
 
       error_count += 1
