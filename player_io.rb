@@ -17,7 +17,7 @@ module PlayerIO
     input
   end
 
-  def prompt_color_move
+  def prompt_color_move(color_code, curr_move_idx)
     message = "Use the 'right' and 'left' arrow keys to navigate horizontally." \
     "\nWith the 'up' and 'down' keys change the color." \
     "\nPress 'enter' to lock in your color code."
@@ -25,7 +25,8 @@ module PlayerIO
     regex = /(\e\[[ABCD])|(\r)/ # Regex for arrow keys and enter key
 
     condition = ->(input) { regex.match(input) }
-    prompt(message, condition, prompt_one_char: true)
+    prompt(message, condition, prompt_one_char: true,
+                               print_color_row_data: { color_code: color_code, curr_move_idx: curr_move_idx })
   end
 
   def prompt_no_rounds
@@ -42,10 +43,18 @@ module PlayerIO
     prompt(message, condition).to_i
   end
 
-  def prompt(prompt_text, condition, prompt_one_char: false)
+  def prompt(prompt_text,
+             condition,
+             prompt_one_char: false,
+             print_color_row_data: { color_code: nil, curr_move_idx: nil })
+
     error_count = 0
 
     loop do
+      unless print_color_row_data[:color_code].nil?
+        print_color_row(print_color_row_data[:color_code], print_color_row_data[:curr_move_idx])
+      end
+
       new_prompt_text = "#{prompt_text} (#{error_count})" unless error_count.zero?
       puts new_prompt_text || prompt_text
       input = prompt_one_char ? prompt_for_single_char : gets.chomp

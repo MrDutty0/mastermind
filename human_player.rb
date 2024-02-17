@@ -16,8 +16,7 @@ class HumanPlayer < Player
     curr_move_idx = 0
 
     loop do
-      print_color_row(color_code, curr_move_idx)
-      move = prompt_color_move
+      move = prompt_color_move(color_code, curr_move_idx)
       return color_code if enter_key?(move)
 
       curr_move_idx = change_horizontal_position(move, curr_move_idx) if horizontal_arrow_key?(move)
