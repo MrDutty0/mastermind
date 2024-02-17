@@ -4,8 +4,6 @@ require_relative 'player'
 require_relative 'player_io'
 require_relative 'display'
 
-TOTAL_COLORS = 6
-TOTAL_PEGS = 4
 # Human player
 class HumanPlayer < Player
   include PlayerIO
