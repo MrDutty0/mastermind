@@ -17,7 +17,7 @@ module PlayerIO
     input
   end
 
-  def prompt_color_move(color_code, curr_move_idx)
+  def prompt_color_move(color_code, curr_move_idx, guess_history: nil)
     message = "Use the 'right' and 'left' arrow keys to navigate horizontally." \
     "\nWith the 'up' and 'down' keys change the color." \
     "\nPress 'enter' to lock in your color code."
@@ -26,7 +26,8 @@ module PlayerIO
 
     condition = ->(input) { regex.match(input) }
     prompt(message, condition, prompt_one_char: true,
-                               print_color_row_data: { color_code: color_code, curr_move_idx: curr_move_idx })
+                               print_color_row_data: { color_code: color_code, curr_move_idx: curr_move_idx },
+                               guess_history: guess_history)
   end
 
   def prompt_no_rounds
@@ -43,16 +44,26 @@ module PlayerIO
     prompt(message, condition).to_i
   end
 
+  def prompt_game_restart
+    message = 'Do you want to play again?'
+    regex = /^[yn]$/i
+    condition = ->(input) { regex.match(input) }
+    prompt(message, condition).downcase
+  end
+
   def prompt(prompt_text,
              condition,
              prompt_one_char: false,
-             print_color_row_data: { color_code: nil, curr_move_idx: nil })
+             print_color_row_data: { color_code: nil, curr_move_idx: nil },
+             guess_history: nil)
 
     error_count = 0
 
     loop do
+      print_guess_history(guess_history) unless guess_history.nil?
       unless print_color_row_data[:color_code].nil?
         print_color_row(print_color_row_data[:color_code], print_color_row_data[:curr_move_idx])
+        puts ''
       end
 
       new_prompt_text = "#{prompt_text} (#{error_count})" unless error_count.zero?
